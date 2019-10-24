@@ -12,17 +12,30 @@ int main() {
     int compValue, userValue, nWin = 0, nLoss = 0, nTie = 0;
     srand(time(NULL));
 
+    Deck origDeck;             //initializing deck
+
+    Deck *Orig = new Deck();        // making deck
+    for (int s = 0; s < 4; s++) {
+        for (int r = 0; r < 13; r++) {
+            Card *player = new Card(r, s);
+            Orig->Add(player);
+        }
+    }
+
     play = true;
+
+    Orig->Shuffle();        //shuffling deck
+
     while(play) {
-        // assign values to computer and user
-        compValue = rand() % 52;
-        userValue = rand() % 52;
+
+        Card compCard = Orig->Deal();           // dealing cards to player and computer
+        Card playerCard = Orig->Deal();
 
         // get user's bet
-        cout << "Computer's value is " << compValue << endl;
+        cout << "Computer's value is " << compCard.getValue() << endl;
         invalid = true;
         while(invalid) {
-            cout << "Do you think your number is higher or lower? (H/L)" << endl;
+            cout << "Do you think your card is higher or lower? (H/L)" << endl;
             cin >> response;
             if (toupper(response.at(0)) == 'H') {
                 // continue playing
@@ -40,20 +53,28 @@ int main() {
         }
 
         // determine outcome
-        if((compValue < userValue && guessedHigher) || (compValue > userValue && !guessedHigher)) {
+        if((compCard < playerCard && guessedHigher) || (compCard > playerCard && !guessedHigher)) {
             cout << "Great! You're right:" << endl;
             nWin++;
-        } else if((compValue > userValue && guessedHigher) || (compValue < userValue && !guessedHigher)) {
+        } else if((compCard > playerCard && guessedHigher) || (compCard < playerCard && !guessedHigher)) {
             cout << "Sorry, you're wrong:" << endl;
             nLoss++;
         } else {
             cout << "It's a tie:" << endl;
             nTie++;
         }
-        cout << "\tyour value is " << userValue << endl;
+        cout << "\tyour value is " << playerCard.getValue() << endl;
 
         // ask user to play again
-        invalid = true;
+
+        if (Orig->Empty()) {
+            play = false;
+            invalid = false;
+        }
+        else {
+            invalid = true;
+        }
+
         while(invalid) {
             cout << "Play again? (Y/N)" << endl;
             cin >> response;
